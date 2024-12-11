@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace App
 {
-    public partial class Form1 : Form
+    public partial class app : Form
     {
         public struct Product
         {
@@ -34,16 +35,18 @@ namespace App
 
         List<Product> products = new List<Product>();
 
-        public Form1()
+        public app()
         {
             InitializeComponent();
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+           
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             // Добавляем продукт в список
-            products.Add(new Product("Прибор 1", "11.01.24", "00.00.01"));
+            //products.Add(new Product("Прибор 1", "11.01.24", "00.00.01"));
 
             // Создаем DataTable и добавляем колонки
             DataTable table = new DataTable();
@@ -67,25 +70,36 @@ namespace App
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            // Проверяем, изменена ли дата проверки или периодичность проверки
-            if (e.ColumnIndex == 1 || e.ColumnIndex == 2) // Индексы колонок "Дата проверки" и "Периодичность"
-            {
-                UpdateNextCheckDate(e.RowIndex);
-            }
+
+            UpdateNextCheckDate(e.RowIndex);
         }
+
 
         private void UpdateNextCheckDate(int rowIndex)
         {
             var table = (DataTable)dataGridView1.DataSource;
 
+            if (table == null || rowIndex < 0 || rowIndex >= table.Rows.Count)
+            {
+                //MessageBox.Show("Строка не найдена.");
+                return;
+            }
+
+            if (table.Rows[rowIndex][1] == DBNull.Value || table.Rows[rowIndex][2] == DBNull.Value)
+            {
+                MessageBox.Show("Одно из значений (Дата проверки или Периодичность) отсутствует.");
+                return;
+            }
+
             // Получаем значения из ячеек
-            string proverkaStr = table.Rows[rowIndex][1].ToString();
+            string proverkaStr = table.Rows[rowIndex][1].ToString(); 
             string periodStr = table.Rows[rowIndex][2].ToString();
+
+
 
             DateTime proverkaDate;
             if (DateTime.TryParse(proverkaStr, out proverkaDate))
             {
-                // Предположим, что периодичность вводится в формате "дд.чч.мм"
                 var periodParts = periodStr.Split('.');
                 if (periodParts.Length == 3 &&
                     int.TryParse(periodParts[0], out int days) &&
@@ -109,7 +123,7 @@ namespace App
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Ваш код обработки клика по ячейке
+            
         }
 
         private void CloseButton_Click(object sender, EventArgs e)

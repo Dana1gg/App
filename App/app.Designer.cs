@@ -1,6 +1,6 @@
 ﻿namespace App
 {
-    partial class Form1
+    partial class app
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(app));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.close = new System.Windows.Forms.Label();
             this.CloseButton = new System.Windows.Forms.Button();
@@ -91,7 +92,7 @@
             this.button2.Text = "Удалить";
             this.button2.UseVisualStyleBackColor = false;
             // 
-            // Form1
+            // app
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -102,8 +103,10 @@
             this.Controls.Add(this.close);
             this.Controls.Add(this.dataGridView1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "app";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "app";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
