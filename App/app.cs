@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace App
@@ -45,13 +45,10 @@ namespace App
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Добавляем продукт в список
-            //products.Add(new Product("Прибор 1", "11.01.24", "00.00.01"));
-
-            // Создаем DataTable и добавляем колонки
+            
             DataTable table = new DataTable();
             table.Columns.Add("Название", typeof(string));
-            table.Columns.Add("Дата проверки", typeof(string));
+            table.Columns.Add("Дата поверки", typeof(string));
             table.Columns.Add("Периодичность поверки", typeof(string));
             table.Columns.Add("Дата следующей поверки", typeof(string));
 
@@ -68,22 +65,35 @@ namespace App
             dataGridView1.ReadOnly = false; 
         }
 
-        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
 
-            UpdateNextCheckDate(e.RowIndex);
+            if (await IsRowFilled(e.RowIndex))
+            {
+                UpdateNextCheckDate(e.RowIndex);
+            }
         }
 
+        private Task<bool> IsRowFilled(int rowIndex)
+        {
+            return Task.Run(() =>
+            {
+                var table = (DataTable)dataGridView1.DataSource;
+
+                if (table == null || rowIndex < 0 || rowIndex >= table.Rows.Count)
+                {
+                    return false;
+                }
+
+                // Проверяем, заполнены ли ячейки "Дата проверки" и "Периодичность"
+                return table.Rows[rowIndex][1] != DBNull.Value && table.Rows[rowIndex][2] != DBNull.Value;
+            });
+        }
 
         private void UpdateNextCheckDate(int rowIndex)
         {
             var table = (DataTable)dataGridView1.DataSource;
 
-            if (table == null || rowIndex < 0 || rowIndex >= table.Rows.Count)
-            {
-                //MessageBox.Show("Строка не найдена.");
-                return;
-            }
 
             if (table.Rows[rowIndex][1] == DBNull.Value || table.Rows[rowIndex][2] == DBNull.Value)
             {
@@ -148,6 +158,20 @@ namespace App
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             lastPoint = new Point(e.X, e.Y);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void CloseButton_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button_minimized_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }
